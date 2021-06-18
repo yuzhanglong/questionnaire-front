@@ -92,18 +92,18 @@ export class EslintPlugin {
     })
 
     options.appManager.packageManager.mergeIntoCurrent({
-      devDependencies: Object.assign(
+      // 依赖
+      devDependencies: {
         // 基本的 eslint 依赖
-        {
-          'eslint': '^7.19.0'
-        },
+        'eslint': '^7.19.0',
 
         // 是否需要 typescript
-        inquiryOpts.useTypeScript ? {
+
+        ...inquiryOpts.useTypeScript && {
           '@typescript-eslint/eslint-plugin': '^4.15.0',
           '@typescript-eslint/parser': '^4.15.0'
-        } : {}
-      ),
+        }
+      },
 
       // 提供 npm run lint script 启动 eslint 检查
       scripts: {
@@ -113,23 +113,31 @@ export class EslintPlugin {
       // eslint 基础配置
       eslintConfig: {
         root: true,
+
         parserOptions: {
           ecmaVersion: 2018,
           sourceType: 'module'
         },
+
         env: {
           browser: true,
           node: true
         },
+
         plugins: inquiryOpts.useTypeScript ? ['@typescript-eslint'] : [],
-        rules: inquiryOpts.useTypeScript ? {
+
+        rules: inquiryOpts.useTypeScript && {
           '@typescript-eslint/no-empty-interface': 'warn',
           '@typescript-eslint/no-var-requires': 'off',
           '@typescript-eslint/ban-ts-comment': 'off',
           '@typescript-eslint/explicit-module-boundary-types': 'off',
           '@typescript-eslint/no-explicit-any': 'off',
           '@typescript-eslint/no-empty-function': 'off'
-        } : {}
+        },
+
+        ...inquiryOpts.useTypeScript && {
+          'parser': '@typescript-eslint/parser'
+        }
       }
     })
   }
